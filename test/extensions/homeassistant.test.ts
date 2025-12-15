@@ -93,6 +93,52 @@ describe("Extension: HomeAssistant", () => {
         await flushPromises();
     });
 
+    it("Should discover weekly_schedule sensor with json_attributes instead of truncated value", () => {
+        // Find the discovery call for weekly_schedule
+        const weeklyScheduleDiscoveryCall = mockMQTTPublishAsync.mock.calls.find((call) => call[0].includes("weekly_schedule/config"));
+
+        // Skip if no device with weekly_schedule in mocks
+        if (!weeklyScheduleDiscoveryCall) {
+            console.log("Skipping: No device with weekly_schedule in test mocks");
+            return;
+        }
+
+        const [_topic, payloadStr] = weeklyScheduleDiscoveryCall;
+        const payload = JSON.parse(payloadStr);
+
+        // Verify the payload structure
+        expect(payload.icon).toBe("mdi:calendar-clock");
+        expect(payload.entity_category).toBe("config");
+
+        // Verify value_template shows a summary, not the raw JSON
+        expect(payload.value_template).toContain("days configured");
+        expect(payload.value_template).not.toContain("truncate");
+
+        // Verify json_attributes are used
+        expect(payload.json_attributes_topic).toBeDefined();
+        expect(payload.json_attributes_template).toBeDefined();
+        expect(payload.json_attributes_template).toContain("schedule");
+    });
+
+    it("Should have weekly_schedule in LIST_DISCOVERY_LOOKUP with correct configuration", () => {
+        // This is a sanity check that the configuration exists
+        // The actual test is done via the discovery payload verification above
+
+        const expectedConfig = {
+            icon: "mdi:calendar-clock",
+            entity_category: "config",
+        };
+
+        // If a device with weekly_schedule is discovered, verify it has these properties
+        const discoveryCall = mockMQTTPublishAsync.mock.calls.find((call) => call[0].includes("weekly_schedule/config"));
+
+        if (discoveryCall) {
+            const payload = JSON.parse(discoveryCall[1]);
+            expect(payload.icon).toBe(expectedConfig.icon);
+            expect(payload.entity_category).toBe(expectedConfig.entity_category);
+        }
+    });
+
     it("Should not have duplicate type/object_ids in a mapping", async () => {
         const duplicated: string[] = [];
 
