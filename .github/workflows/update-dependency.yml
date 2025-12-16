@@ -10,7 +10,8 @@ jobs:
         permissions:
             contents: write
             pull-requests: write
-
+        # Disabled for custom fork - only triggered by repository_dispatch events
+        if: false
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v6
