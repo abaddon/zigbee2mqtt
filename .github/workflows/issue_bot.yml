@@ -11,11 +11,8 @@ permissions:
 jobs:
   comment:
     runs-on: ubuntu-latest
-    if: |
-      contains(github.event.issue.labels.*.name, 'new device support') ||
-      contains(github.event.issue.labels.*.name, 'external converter') ||
-      startsWith(github.event.issue.title, '[New device support]') ||
-      startsWith(github.event.issue.title, '[External Converter]')
+    # Disabled for custom fork - references upstream Koenkk/zigbee-herdsman-converters
+    if: false
     steps:
       - uses: actions/checkout@v6
         with:

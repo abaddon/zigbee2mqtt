@@ -16,7 +16,7 @@ jobs:
             - uses: actions/checkout@v6
               with:
                   ref: dev
-                  token: ${{ secrets.GH_TOKEN }}
+                  token: ${{ secrets.GITHUB_TOKEN }}
             - uses: pnpm/action-setup@v4
             - uses: actions/setup-node@v6
               with:
@@ -31,9 +31,9 @@ jobs:
                   commit-message: 'fix(ignore): update ${{ github.event.client_payload.package }} to ${{ github.event.client_payload.version }}'
                   branch: 'deps/${{ github.event.client_payload.package }}'
                   title: 'fix(ignore): update ${{ github.event.client_payload.package }} to ${{ github.event.client_payload.version }}'
-                  token: ${{ secrets.GH_TOKEN }}
+                  token: ${{ secrets.GITHUB_TOKEN }}
             - run: sleep 5 # Otherwise pull request may not exist yet causing automerge to fail
             - run: gh pr merge --squash --auto "${{ steps.cpr.outputs.pull-request-number }}"
               if: steps.cpr.outputs.pull-request-operation == 'created'
               env:
-                  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

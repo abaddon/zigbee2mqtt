@@ -12,7 +12,7 @@ jobs:
             - name: Delete untagged images
               uses: actions/github-script@v8
               with:
-                  github-token: ${{ secrets.GH_TOKEN }}
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
                   script: |
                       const response = await github.request("GET /${{ env.OWNER }}/packages/container/${{ env.PACKAGE_NAME }}/versions",
                         { per_page: ${{ env.PER_PAGE }}
@@ -29,6 +29,6 @@ jobs:
                           }
                       }
               env:
-                  OWNER: user
+                  OWNER: abaddon
                   PACKAGE_NAME: zigbee2mqtt
                   PER_PAGE: 2000

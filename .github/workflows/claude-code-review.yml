@@ -12,6 +12,9 @@ on:
 
 jobs:
   claude-review:
+    # Disabled by default - requires CLAUDE_CODE_OAUTH_TOKEN secret
+    # To enable: Set the secret and change 'if: false' to 'if: true' or add filter conditions
+    if: false
     # Optional: Filter by PR author
     # if: |
     #   github.event.pull_request.user.login == 'external-contributor' ||

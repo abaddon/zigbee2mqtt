@@ -28,7 +28,7 @@ jobs:
               id: release
               with:
                   target-branch: dev
-                  token: ${{secrets.GH_TOKEN}}
+                  token: ${{secrets.GITHUB_TOKEN}}
 
             # Checkout repos
             - uses: actions/checkout@v6
