@@ -2,10 +2,9 @@ name: CI
 
 on:
   push:
-    tags:        
-      - '[0-9]+.[0-9]+.[0-9]+' 
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
     branches:
-      - dev
       - master
   pull_request:
 
@@ -23,13 +22,12 @@ jobs:
             contents: read # for checking out code
         steps:
             - uses: actions/checkout@v6
-              if: (github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/tags/')) && github.event_name == 'push'
+              if: (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')) && github.event_name == 'push'
               with:
-                  # Required for `release: merge dev -> master and promote dev`
                   token: ${{ secrets.GITHUB_TOKEN }}
 
             - uses: actions/checkout@v6
-              if: ((github.ref == 'refs/heads/dev' || startsWith(github.ref, 'refs/tags/')) && github.event_name == 'push') == false
+              if: ((github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')) && github.event_name == 'push') == false
 
             - uses: pnpm/action-setup@v4
 
@@ -51,17 +49,17 @@ jobs:
               run: pnpm run test:coverage
 
             - name: Bench
-#              if: github.ref == 'refs/heads/dev' || (github.event_name == 'pull_request' && !startsWith(github.head_ref, 'release-please-'))
+              if: github.ref == 'refs/heads/master' || (github.event_name == 'pull_request' && !startsWith(github.head_ref, 'release-please-'))
               uses: Nerivec/action-ci-bench@main
               with:
                 token: ${{ secrets.GITHUB_TOKEN }}
-                compare-against: dev
+                compare-against: master
                 base-cmd: npx vitest bench --run --config ./test/vitest.config.mts --outputJson bench.json
                 compare-cmd: npx vitest bench --run --config ./test/vitest.config.mts --compare bench.json
                 base-result: bench.json
 
             - name: Log in to the GitHub container registry
-              if: startsWith(github.ref, 'refs/tags/') && github.event_name == 'push'
+              if: (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')) && github.event_name == 'push'
               uses: docker/login-action@v3
               with:
                   registry: ghcr.io
@@ -69,30 +67,30 @@ jobs:
                   password: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Docker setup - QEMU
-              if: startsWith(github.ref, 'refs/tags/') && github.event_name == 'push'
+              if: (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')) && github.event_name == 'push'
               uses: docker/setup-qemu-action@v3
               with:
                   platforms: all
 
             - name: Docker setup - Buildx
-              if: startsWith(github.ref, 'refs/tags/') && github.event_name == 'push'
+              if: (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/')) && github.event_name == 'push'
               id: buildx
               uses: docker/setup-buildx-action@v3
               with:
                   version: latest
 
-            - name: dev - Docker build and push
-              if: startsWith(github.ref, 'refs/tags/') && github.event_name == 'push'
+            - name: master - Docker build and push
+              if: github.ref == 'refs/heads/master' && github.event_name == 'push'
               uses: docker/build-push-action@v6
               with:
                   context: .
                   file: docker/Dockerfile
                   platforms: linux/arm64,linux/amd64
-                  tags: ghcr.io/abaddon/zigbee2mqtt:latest-dev
+                  tags: ghcr.io/abaddon/zigbee2mqtt:latest
                   push: true
                   build-args: |
                       COMMIT=${{ github.sha }}
-                      VERSION=dev
+                      VERSION=latest
                       DATE=${{ github.event.repository.updated_at }}
 
             - name: release - Docker meta

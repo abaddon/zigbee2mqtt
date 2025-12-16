@@ -1,5 +1,5 @@
 name: Abaddon Zigbee2MQTT
-version: "0.0.3"
+version: "dev"
 slug: abaddon_zigbee2mqtt
 description: Custom Zigbee2MQTT - Zigbee to MQTT bridge with custom features
 url: https://github.com/abaddon/zigbee2mqtt

@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/abaddon/zigbee2mqtt:0.0.3
+ARG BUILD_FROM=ghcr.io/abaddon/zigbee2mqtt:latest
 FROM ${BUILD_FROM}
 
 # Copy run script
