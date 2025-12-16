@@ -12,14 +12,10 @@ on:
 
 jobs:
   claude-review:
-    # Disabled by default - requires CLAUDE_CODE_OAUTH_TOKEN secret
-    # To enable: Set the secret and change 'if: false' to 'if: true' or add filter conditions
-    if: false
-    # Optional: Filter by PR author
-    # if: |
-    #   github.event.pull_request.user.login == 'external-contributor' ||
-    #   github.event.pull_request.user.login == 'new-developer' ||
-    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
+    if: |
+       github.event.pull_request.user.login == 'external-contributor' ||
+       github.event.pull_request.user.login == 'new-developer' ||
+       github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
 
     runs-on: ubuntu-latest
     permissions:
